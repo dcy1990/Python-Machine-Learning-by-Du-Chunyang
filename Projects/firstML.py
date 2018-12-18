@@ -12,12 +12,15 @@ from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
 from sklearn.linear_model import LogisticRegression
+
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
 import matplotlib.pyplot as plt
+
+import seaborn as sns
 
 # Load dataset
 url = "https://raw.githubusercontent.com/jbrownlee/Datasets/master/iris.csv"
@@ -31,6 +34,11 @@ dataset.plot(kind='box',subplots=True,layout=(2,2),sharex=False,sharey=False)
 dataset.hist()
 
 pd.plotting.scatter_matrix(dataset)
+
+
+g=sns.pairplot(dataset, hue="class")
+g.fig.set_size_inches(5,5)
+
 
 array=dataset.values
 X=array[:,0:4]
@@ -54,7 +62,7 @@ names=[]
 
 for name, model in models:
     kfold=model_selection.KFold(n_splits=5,random_state=seed)
-    cv_results=model_selection.cross_val_score(model,X_train,y_train,cv=kfold,scoring=scoring)
+    cv_results=model_selection.cross_val_score(model,X_train,y_train,cv=kfold,scoring='accuracy')
     results.append(cv_results)
     names.append(name)
     print('%s:%f (%f)' %(name,cv_results.mean(),cv_results.std()))
@@ -72,3 +80,4 @@ predictions=knn.predict(X_test)
 print(accuracy_score(y_test,predictions))
 print(confusion_matrix(y_test,predictions))
 print(classification_report(y_test,predictions))
+
